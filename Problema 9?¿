@@ -1,0 +1,267 @@
+#include <iostream>
+#include <windows.h>
+#include <string>
+#include <cstdlib>
+// Clase Alumno
+class Alumno {
+private:
+    //Atributos
+    std::string Nombre;
+    std::string Carrera;
+    int MateriasAP;
+    float Promedio;     
+public:
+
+    //Metodos
+    Alumno( const std::string N = "", const std::string C = "", int MAP = 0, float Prom = 0.0) {
+        Nombre = N; Carrera = C; MateriasAP = MAP; Promedio = Prom;
+    }
+
+    void SetNombre(std::string N){Nombre=N;}
+    std::string getNombre() const {return Nombre;}  
+    void SetCarrera(std::string C){Carrera=C;}
+    std::string getCarrera() const {return Carrera;} 
+    void SetMateria(int MAP){MateriasAP=MAP;}
+    int getMateria(){return MateriasAP;}
+    void SetPromedio(float Prom){Promedio=Prom;}
+    float getPromedio() const {return Promedio;} 
+
+    //Sobrecarga << >>
+    friend std::ostream& operator<<(std::ostream& o, const Alumno& alumno) {
+        o << "Nombre: " << alumno.Nombre << std::endl;
+        o << "Carrera: " << alumno.Carrera << std::endl;
+        o << "Materia: " << alumno.MateriasAP << std::endl;
+        o << "Promedio: " << alumno.Promedio << std::endl;
+        return o;
+    }
+
+    friend std::istream& operator>>(std::istream& i, Alumno& alumno) {
+        std::cout << "Ingrese el nombre del alumno/a: ";
+        i.ignore();
+        std::getline(i, alumno.Nombre);
+        std::cout << "Ingrese la Carrera: ";
+        std::getline(i, alumno.Carrera);
+        std::cout << "Ingrese las materias aprobadas: ";
+        i >> alumno.MateriasAP;
+        std::cout << "Ingrese el Promedio: ";
+        i.ignore();
+        i >> alumno.Promedio;
+        return i;
+    }
+        void Imprime(){
+        std::cout << "Nombre: " << Nombre << std::endl;
+        std::cout << "Carrera: " << Carrera << std::endl;
+        std::cout << "Materia: " << MateriasAP << std::endl;
+        std::cout << "Promedio: " << Promedio << std::endl;
+    }
+
+    // Sobrecarga del operador == para comparar alumnos por nombre
+    bool operator==(const Alumno& otro) const {
+        return this->Nombre == otro.Nombre;
+    }
+
+    // Sobrecarga del operador < para comparar alumnos por promedio
+    bool operator<(const Alumno& otro) const {
+        return this->Promedio < otro.Promedio;
+    }
+};
+
+const int MAX = 10;
+
+template <typename T>
+class Lista{
+private: 
+    Alumno Datos[MAX];
+    int Tam;
+
+public:
+    Lista() : Tam(0) {}
+
+
+    int getTam() const { // Método getter para Tam
+        return Tam;
+    }
+
+    int Vacia() {
+        return (Tam == 0); 
+    }
+
+    int Llena() {
+        return (Tam == MAX);
+    }
+
+    int Inserta(T elemento, int posicion) {
+        if (Llena() || posicion < 0 || posicion > Tam) {
+            return 0;  
+        }
+
+        for (int i = Tam; i > posicion; i--) {
+            Datos[i] = Datos[i - 1]; 
+        }
+        Datos[posicion] = elemento;
+        Tam++;
+        return 1;
+    }
+
+    int Agrega(T elemento) {
+        if (Llena()) {
+            return 0; 
+        }
+        Datos[Tam] = elemento;
+        Tam++;
+        return 1; 
+    }
+
+    int Busca(T elemento) {
+        for (int i = 0; i < Tam; i++) {
+            if (Datos[i] == elemento) {
+                return i; 
+            }
+        }
+        return -1; 
+    }
+
+    int Elimina(int posicion) {
+        if (Vacia() || posicion < 0 || posicion >= Tam) {
+            return 0; 
+        }
+
+        for (int i = posicion; i < Tam - 1; i++) {
+            Datos[i] = Datos[i + 1];
+        }
+        Tam--;
+        return 1; 
+    }   
+
+    int Muestra() {
+        if (Vacia()) {
+            std::cout << "La lista esta vacia." << std::endl;
+            return 0; 
+        }
+
+        for (int i = 0; i < Tam; i++) {
+            std::cout << "Posicion " << i << ": " << std::endl;
+            Datos[i].Imprime(); 
+            std::cout << std::endl;
+        }
+        return 1; 
+    }   
+
+    void Insercion() {
+        int i, j;
+        Alumno key; 
+        for (i = 1; i < Tam; i++) {
+            key = Datos[i];
+            j = i - 1;
+
+            while (j >= 0 && Datos[j] < key) {
+                Datos[j + 1] = Datos[j];
+                j = j - 1;
+            }
+            Datos[j + 1] = key;
+        }
+    }
+};
+
+void mostrarMenu() {
+    std::cout << "\n\tMenu:\n";
+    std::cout << "\t1. Alta solicitud\n";
+    std::cout << "\t2. Hacer constancia\n";
+    std::cout << "\t3. Mostrar todos los alumnos\n";
+    std::cout << "\t4. Buscar\n";
+    std::cout << "\t0. Salir\n";
+    std::cout << "\tIngrese su opcion: ";
+}
+
+int main() {
+    Lista<Alumno> listaAlumno;
+    int opcion;
+
+    do {
+        system("cls"); 
+        system("Color F0"); 
+        mostrarMenu();
+        std::cin >> opcion;
+
+        switch (opcion) {
+            case 1: { // Agrega
+                system("cls");
+                if (listaAlumno.Llena()) {
+                    std::cout << "La lista está llena. No se puede agregar" << std::endl;
+                } else {
+                    Alumno nuevoAlumno;
+                    std::cin >> nuevoAlumno;
+                    listaAlumno.Agrega(nuevoAlumno);
+                    std::cout << "Alumno agregado correctamente" << std::endl;
+                }
+                system("pause");
+                break;
+            }
+
+            case 2: { // Elimina
+                system("cls");
+                if (listaAlumno.Vacia()) {
+                    std::cout << "La lista esta vacia." << std::endl;
+                } else {
+                    Alumno alumnoEliminar;
+                    std::cout << "Ingrese los datos del alumno a eliminar:" << std::endl;
+                    std::cin >> alumnoEliminar;
+                    int posicion = listaAlumno.Busca(alumnoEliminar);
+                    if (posicion != -1) {
+                        listaAlumno.Elimina(posicion);
+                        std::cout << "Alumno eliminado" << std::endl;
+                    } else {
+                        std::cout << "Alummno no encontrado" << std::endl;
+                    }
+                }
+                system("pause");
+                break;
+            }
+
+            case 3: { //Muestra
+                system("cls");
+                listaAlumno.Muestra();
+                system("pause");
+                break;
+            }
+
+            case 4: { // Buscar
+                system("cls");
+                if (listaAlumno.Vacia()) {
+                    std::cout << "La lista esta vacia." << std::endl;
+                } else {
+                    Alumno AlumBuscado;
+                    std::cout << "Ingrese los datos del alumno a buscar:" << std::endl;
+                    std::cin >> AlumBuscado;
+                    // Ordenamiento insercion
+                    listaAlumno.Insercion(); 
+                    int posicion = listaAlumno.Busca(AlumBuscado);
+                    if (posicion != -1) {
+                        std::cout << "Alumno encontrado en la posicion " << posicion << std::endl;
+                        std::cout << "Datos del alumno:" << std::endl;
+                        listaAlumno.Muestra();
+                    } else {
+                        std::cout << "Alumno no encontrado" << std::endl;
+                    }
+                }
+                system("pause");
+                break;
+            }
+
+            case 0: {  
+                std::cout << "Gracias por usar" << std::endl;
+                break;
+            }
+
+            default: {
+                system("cls");
+                std::cout << "Opcion invalida" << std::endl;
+                system("Color 4F");
+                Sleep(2500);
+            }
+        }
+
+    } while (opcion != 0);
+
+    return 0;
+}
